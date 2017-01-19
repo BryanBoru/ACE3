@@ -71,7 +71,7 @@ GVAR(cacheTankDuplicates) = call CBA_fnc_createNamespace;
 
 ["ReammoBox_F", "init", {
     (_this select 0) addEventHandler ["HandleDamage", {
-        if (GVAR(enableAmmobox)) then {
+        if ((_this select 0) getVariable [QGVAR(enable), GVAR(enableAmmobox)]) then {
             ["box", _this] call FUNC(handleDamage);
         };
     }];
@@ -80,11 +80,9 @@ GVAR(cacheTankDuplicates) = call CBA_fnc_createNamespace;
 // secondary explosions
 ["AllVehicles", "killed", {
     params ["_vehicle"];
-    if (_vehicle getVariable [QGVAR(enable),GVAR(enable)]) then {
-        _vehicle call FUNC(secondaryExplosions);
-        if (_vehicle getVariable [QGVAR(enableAmmoCookoff), GVAR(enableAmmoCookoff)]) then {
-            [_vehicle, magazinesAmmo _vehicle] call FUNC(detonateAmmunition);
-        };
+    if (_vehicle getVariable [QGVAR(enableAmmoCookoff), GVAR(enableAmmoCookoff)]) then {
+        ([_vehicle] call FUNC(getVehicleAmmo)) params ["_mags", "_total"];
+        [_vehicle, _mags, _total] call FUNC(detonateAmmunition);
     };
 }, nil, ["Man","StaticWeapon"]] call CBA_fnc_addClassEventHandler;
 
